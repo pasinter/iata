@@ -42,7 +42,7 @@ def lambda_handler(event, context):
     try:
         response = s3_client.upload_file(tmp_file, ARCHIVE_BUCKET_NAME, local_filename)
     except ClientError as e:
-        logging.error(e)
+        logger.error(e)
         return False
     return {
         "file": f's3://{ARCHIVE_BUCKET_NAME}/{local_filename}'

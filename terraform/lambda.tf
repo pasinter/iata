@@ -93,3 +93,24 @@ resource "aws_lambda_function" "fetch-data" {
 
   depends_on = [ aws_iam_role.LambdaExecutionRole ]
 }
+
+resource "aws_lambda_function" "extract-csv" {
+  function_name = "${var.prefix}-extract-csv"
+
+  handler = "lambda_handler.lambda_handler"
+  runtime = "python3.6"
+  filename= var.extract_csv_lambda_zipfile
+  source_code_hash = filebase64sha256(var.extract_csv_lambda_zipfile)
+
+  role = "${aws_iam_role.LambdaExecutionRole.arn}"
+
+  timeout = 500
+
+  environment {
+    variables = {
+      ARCHIVE_BUCKET_NAME=aws_s3_bucket.landing_archive.bucket
+    }
+  }
+
+  depends_on = [ aws_iam_role.LambdaExecutionRole ]
+}

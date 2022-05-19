@@ -14,3 +14,7 @@ variable "prefix" {
 variable "fetch_data_lambda_zipfile" {
   default     = "../lambdas/fetch_data/lambda.zip"
 }
+
+variable "extract_csv_lambda_zipfile" {
+  default     = "../lambdas/extract_csv/lambda.zip"
+}
