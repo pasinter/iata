@@ -10,3 +10,7 @@ variable "aws_region" {
 variable "prefix" {
   default     = "sales-records"
 }
+
+variable "fetch_data_lambda_zipfile" {
+  default     = "../lambdas/fetch_data/lambda.zip"
+}

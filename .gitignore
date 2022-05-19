@@ -1,2 +1,9 @@
 terraform/.terraform/
 terraform/.terraform.lock.hcl
+
+# Python lambdas
+lambdas/**/lambda.zip
+lambdas/**/__pycache__/
+lambdas/**/*
+!lambdas/**/lambda_handler.py
+!lambdas/**/requirements.txt

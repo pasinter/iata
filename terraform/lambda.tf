@@ -18,6 +18,15 @@ resource "aws_iam_role" "LambdaExecutionRole" {
 EOF
 }
 
+data "aws_iam_policy" "s3_full_access" {
+  arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_service_account_s3_full_access" {
+  role       = aws_iam_role.LambdaExecutionRole.name
+  policy_arn = data.aws_iam_policy.s3_full_access.arn
+}
+
 resource "aws_iam_role_policy" "LambdaExecutionRolePolicy" {
   name = "${var.prefix}-LambdaExecution"
   role = "${aws_iam_role.LambdaExecutionRole.id}"
@@ -67,19 +76,20 @@ EOF
 resource "aws_lambda_function" "CreateCognitoUser" {
   function_name = "${var.prefix}-CreateCognitoUser"
 
-  handler = "lambda.lambda_handler"
+  handler = "lambda_handler.lambda_handler"
   runtime = "python3.6"
-  # filename= "${var.create_user_zipfile}"
-  # source_code_hash = "${base64sha256(file(var.create_user_zipfile))}"
+  filename= var.fetch_data_lambda_zipfile
+  source_code_hash = filebase64sha256(var.fetch_data_lambda_zipfile)
 
   role = "${aws_iam_role.LambdaExecutionRole.arn}"
 
   timeout = 20
 
-  environment {
-    variables = {
-    }
-  }
+  # environment {
+  #   variables = {
+
+  #   }
+  # }
 
   depends_on = [ aws_iam_role.LambdaExecutionRole ]
 }
