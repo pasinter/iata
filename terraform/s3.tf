@@ -23,7 +23,7 @@ resource "aws_s3_bucket" "sales_records_data" {
 }
 
 resource "aws_s3_bucket" "glue_sales_records" {
-  bucket = "${var.prefix}-glue_sales_records"
+  bucket = "${var.prefix}-glue-sales-records"
   acl           = "private"
   force_destroy = true
 }
