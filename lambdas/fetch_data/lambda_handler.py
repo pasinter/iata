@@ -2,13 +2,13 @@ import logging
 import requests
 import boto3
 from botocore.exceptions import ClientError
+from os import environ
 
 logger = logging.getLogger()
 remote_archive = 'https://eforexcel.com/wp/wp-content/uploads/2020/09/2m-Sales-Records.zip'
 csv_file = '2m Sales Records.csv'
-
+ARCHIVE_BUCKET_NAME = environ.get('ARCHIVE_BUCKET_NAME')
 s3_client = boto3.client('s3')
-bucket_name = ''
 
 def download_file(url, local_filename):
     headers = {
@@ -25,19 +25,22 @@ def download_file(url, local_filename):
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     }
 
+    tmp_file = '/tmp/' + local_filename
+
     with requests.get(url, stream=True, headers=headers) as r:
         r.raise_for_status()
-        with open(local_filename, 'wb') as f:
+        with open(tmp_file, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192): 
                 f.write(chunk)
+    return tmp_file
 
 def lambda_handler(event, context):
     logger.debug('Event: ' + str(event))
     local_filename = remote_archive.split('/')[-1]
-    download_file(remote_archive, local_filename)
+    tmp_file = download_file(remote_archive, local_filename)
 
     try:
-        response = s3_client.upload_file(local_filename, bucket_name, object_name)
+        response = s3_client.upload_file(tmp_file, ARCHIVE_BUCKET_NAME, local_filename)
     except ClientError as e:
         logging.error(e)
         return False

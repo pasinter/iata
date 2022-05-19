@@ -73,8 +73,8 @@ EOF
 }
 
 
-resource "aws_lambda_function" "CreateCognitoUser" {
-  function_name = "${var.prefix}-CreateCognitoUser"
+resource "aws_lambda_function" "fetch-data" {
+  function_name = "${var.prefix}-fetch-data"
 
   handler = "lambda_handler.lambda_handler"
   runtime = "python3.6"
@@ -83,13 +83,13 @@ resource "aws_lambda_function" "CreateCognitoUser" {
 
   role = "${aws_iam_role.LambdaExecutionRole.arn}"
 
-  timeout = 20
+  timeout = 500
 
-  # environment {
-  #   variables = {
-
-  #   }
-  # }
+  environment {
+    variables = {
+      ARCHIVE_BUCKET_NAME=aws_s3_bucket.landing-archive.bucket
+    }
+  }
 
   depends_on = [ aws_iam_role.LambdaExecutionRole ]
 }
