@@ -87,7 +87,7 @@ resource "aws_lambda_function" "fetch-data" {
 
   environment {
     variables = {
-      ARCHIVE_BUCKET_NAME=aws_s3_bucket.landing-archive.bucket
+      ARCHIVE_BUCKET_NAME=aws_s3_bucket.landing_archive.bucket
     }
   }
 

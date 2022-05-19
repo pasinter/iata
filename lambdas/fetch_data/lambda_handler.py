@@ -44,4 +44,7 @@ def lambda_handler(event, context):
     except ClientError as e:
         logging.error(e)
         return False
+    return {
+        "file": f's3://{ARCHIVE_BUCKET_NAME}/{local_filename}'
+    }
 
