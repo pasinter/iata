@@ -1,5 +1,25 @@
+resource "aws_iam_role" "LambdaExecutionRole" {
+  name = "${var.prefix}-LambdaExecution"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "BasicStsAccessForLambda",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      }
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_iam_role_policy" "LambdaExecutionRolePolicy" {
-  name = "${var.prefix}-${var.project}-LambdaExecution"
+  name = "${var.prefix}-LambdaExecution"
   role = "${aws_iam_role.LambdaExecutionRole.id}"
   policy = <<EOF
 {
@@ -49,28 +69,17 @@ resource "aws_lambda_function" "CreateCognitoUser" {
 
   handler = "lambda.lambda_handler"
   runtime = "python3.6"
-  filename= "${var.create_user_zipfile}"
-  source_code_hash = "${base64sha256(file(var.create_user_zipfile))}"
+  # filename= "${var.create_user_zipfile}"
+  # source_code_hash = "${base64sha256(file(var.create_user_zipfile))}"
 
   role = "${aws_iam_role.LambdaExecutionRole.arn}"
 
   timeout = 20
 
   environment {
-    variables {
-      cognitoUserPoolId = "${var.cognito_user_pool_id}"
-      cognitoClientId = "${var.cognito_client_id}"
-      cognitoEnabledGroups = "${jsonencode(var.cognito_enabled_groups)}"
-      saml_provider_name = "${var.saml_provider_name}"
-      saml_email_attribute_name = "${var.saml_email_attribute_name}"
-      saml_sso_id_attribute_name = "${var.saml_sso_id_attribute_name}"
+    variables = {
     }
   }
 
-  depends_on = [ "aws_iam_role.LambdaExecutionRole" ]
-
-  tags = "${merge(
-    var.default_tags,
-    map()
-  )}"
+  depends_on = [ aws_iam_role.LambdaExecutionRole ]
 }
