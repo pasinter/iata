@@ -4,8 +4,37 @@ resource "aws_sqs_queue" "sqs_from_s3_dlq" {
   receive_wait_time_seconds = 20
 }
 
-resource "aws_sqs_queue" "sqs_from_s3" {
+resource "aws_sqs_queue" "data_fetched" {
   name                       = "${var.prefix}-s3-queue"
+  visibility_timeout_seconds = 3600
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.sqs_from_s3_dlq.arn
+    maxReceiveCount     = 3
+  })
+
+  policy = <<POLICY
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "sqs:SendMessage",
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "sqs:SendMessage"
+            }
+          ]
+        }
+        POLICY
+}
+
+
+resource "aws_sqs_queue" "data-extracted" {
+  name                       = "${var.prefix}-data-extracted"
   visibility_timeout_seconds = 3600
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.sqs_from_s3_dlq.arn
