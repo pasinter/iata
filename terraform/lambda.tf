@@ -133,8 +133,9 @@ resource "aws_lambda_event_source_mapping" "sqs_s3_events_lambda_event_source_ma
   event_source_arn = aws_sqs_queue.data_fetched.arn
   function_name    = aws_lambda_function.extract-csv.arn
   batch_size       = 1
-}
 
+  depends_on = [ aws_lambda_function.extract-csv, aws_sqs_queue.data_fetched ]
+}
 
 resource "aws_lambda_function" "convert-to-parquet" {
   function_name = "${var.prefix}-convert-to-parquet"
@@ -161,10 +162,14 @@ resource "aws_lambda_function" "convert-to-parquet" {
 resource "aws_lambda_function_event_invoke_config" "sqs_s3_events_lambda_function_event_invoke_config_convert-to-parquet" {
   function_name          = aws_lambda_function.convert-to-parquet.function_name
   maximum_retry_attempts = 0
+
+  depends_on = [ aws_lambda_function.convert-to-parquet ]
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_s3_events_lambda_event_source_mapping_convert-to-parquet" {
   event_source_arn = aws_sqs_queue.data-extracted.arn
   function_name    = aws_lambda_function.convert-to-parquet.arn
   batch_size       = 1
+
+  depends_on = [ aws_lambda_function.convert-to-parquet, aws_sqs_queue.data-extracted ]
 }

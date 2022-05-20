@@ -3,6 +3,7 @@ import pandas as pd
 from botocore.exceptions import ClientError
 from os import environ
 import boto3
+import json
 
 logger = logging.getLogger()
 PARQUET_DATA_BUCKET_NAME = environ.get('PARQUET_DATA_BUCKET_NAME')
@@ -10,8 +11,9 @@ s3_client = boto3.client('s3')
 parquet_tmp_file = '/tmp/sales_data.parquet'
 
 def lambda_handler(event, context):
-    bucket = event['Records'][0]['s3']['bucket']['name']
-    key = event['Records'][0]['s3']['object']['key']
+    body = json.loads(event['Records'][0]['body'])
+    bucket = body['Records'][0]['s3']['bucket']['name']
+    key = body['Records'][0]['s3']['object']['key']
     tmp_file = '/tmp/' + key
 
     try:
