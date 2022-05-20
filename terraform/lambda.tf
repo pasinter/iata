@@ -141,9 +141,12 @@ resource "aws_lambda_function" "convert-to-parquet" {
   function_name = "${var.prefix}-convert-to-parquet"
 
   handler = "lambda_handler.lambda_handler"
-  runtime = "python3.6"
+  runtime = "python3.8"
   filename= var.convert_to_parquet_lambda_zipfile
   source_code_hash = filebase64sha256(var.convert_to_parquet_lambda_zipfile)
+
+  layers = ["arn:aws:lambda:eu-central-1:770693421928:layer:Klayers-python38-pandas:48"]
+
 
   role = "${aws_iam_role.LambdaExecutionRole.arn}"
 

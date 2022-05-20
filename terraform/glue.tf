@@ -14,7 +14,7 @@ resource "aws_glue_catalog_table" "sales_records" {
   }
 
   storage_descriptor {
-    location      = "s3://${aws_s3_bucket.glue_sales_records.bucket}/"
+    location      = "s3://${aws_s3_bucket.sales_records_parquet.bucket}/"
     input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
 
@@ -28,54 +28,69 @@ resource "aws_glue_catalog_table" "sales_records" {
     }
 
     columns {
-      name = "id"
+      name = "Region"
       type = "string"
     }
 
     columns {
-      name = "title"
+      name = "Country"
       type = "string"
     }
 
     columns {
-      name = "type"
+      name = "Item Type"
       type = "string"
     }
 
     columns {
-      name = "version"
-      type = "struct<model:string>"
-    }
-
-    columns {
-      name = "links"
-      # type    = "array<struct<anchor:string,href:string,rel:string,type:string>>"
+      name = "Sales Channel"
       type = "string"
     }
 
     columns {
-      name = "lcas:dataType"
+      name = "Order Priority"
       type = "string"
     }
 
     columns {
-      name = "description"
+      name = "Order Date"
       type = "string"
     }
 
     columns {
-      name = "btas:model"
+      name = "Order ID"
       type = "string"
     }
 
     columns {
-      name = "created"
+      name = "Ship Date"
       type = "string"
     }
 
     columns {
-      name = "modified"
-      type = "string"
+      name = "Units Sold"
+      type = "int"
+    }
+
+    columns {
+      name = "Units Sold"
+      type = "decimal"
+    }
+    columns {
+      name = "Unit Cost"
+      type = "decimal"
+    }
+    columns {
+      name = "Total Revenue"
+      type = "decimal"
+    }
+    columns {
+      name = "Total Cost"
+      type = "decimal"
+    }
+    columns {
+      name = "Total Profit"
+      type = "decimal"
     }
   }
 }
