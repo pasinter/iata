@@ -16,7 +16,7 @@ resource "aws_s3_bucket_notification" "landing_archive_new_file_notification" {
   }
 }
 
-resource "aws_s3_bucket" "sales_records_data" {
+resource "aws_s3_bucket" "sales_records_csv" {
   bucket = "${var.prefix}-sales-records-data"
   acl           = "private"
   force_destroy = true
